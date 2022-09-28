@@ -1,0 +1,167 @@
+---
+title: "HW2_DS"
+author: "Deepa"
+date: "2022-09-26"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r}
+library(tidyr);
+library(dplyr); 
+library(kableExtra);
+
+library(ggplot2)
+```
+
+
+## 1. Loaded classification data set from GitHub.
+
+```{r}
+data<- read.csv("https://raw.githubusercontent.com/deepasharma06/Data621-HW2/main/classification-output-data.csv")
+head(data) %>% kable() %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE, position = "center", font_size = 15)
+```
+
+# 2. The data set has three key columns we will use:
+ class: the actual class for the observation
+ scored.class: the predicted class for the observation (based on a threshold of 0.5)
+ scored.probability: the predicted probability of success for the observation
+
+Use the table() function to get the raw confusion matrix for this scored dataset. Make sure you understand 
+the output. In particular, do the rows represent the actual or predicted class? The columns?
+
+
+```{r confusion matrix}
+#row: predicted value; columns: actual value
+conf_matrix = table(Prediction = data$scored.class, Actual = data$class)
+conf_matrix %>% kable() %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE, position = "center", font_size = 15)
+```
+
+
+
+## 3. Write a function that takes the data set as a dataframe, with actual and predicted classifications identified, 
+     and returns the accuracy of the predictions.
+
+
+```{r accuracy}
+accuracy = function(data, predicted_col_name, actual_col_name) {
+  
+  conf = table(data[ , predicted_col_name], data[ , actual_col_name])
+  TP = conf[2,2]
+  TN = conf[1,1]
+  FP = conf[2,1]
+  FN = conf[1,2]
+  
+  #Accurary = (TP + TN) / (TP + FP +TN +FN)
+  return(round((TP+TN)/(TP + FP + TN + FN), 4))
+}
+print(paste0("Accuracy: ", accuracy(data, 'scored.class', 'class')))
+```
+
+## 4.Write a function that takes the data set as a dataframe, with actual and predicted classifications identified, 
+and returns the classification error rate of the predictions.
+
+
+Verify that you get an accuracy and an error rate that sums to one
+
+```{r errorRate}
+errorRate = function(data, predicted_col_name, actual_col_name) {
+  
+  conf = table(data[ , predicted_col_name], data[ , actual_col_name])
+  TP = conf[2,2]
+  TN = conf[1,1]
+  FP = conf[2,1]
+  FN = conf[1,2]
+  
+  #Classification Error Rate = ( FP + FN )/(TP + FP +TN +FN)
+  return(round((FP+FN)/(TP + FP + TN + FN), 4))
+}
+print(paste0("Error rate: ", errorRate(data, 'scored.class', 'class')))
+#accuracy + error rate
+print(paste0("Accuracy + Error rate = ", accuracy(data, 'scored.class', 'class'), " + ", errorRate(data, 'scored.class', 'class'), " = ", (accuracy(data, 'scored.class', 'class') + errorRate(data, 'scored.class', 'class'))))
+```
+
+
+
+
+
+#5 Write a function that takes the data set as a dataframe, with actual and predicted classifications identified, and returns the precision of the predictions.
+
+
+```{r precision}
+precision = function(data, predicted_col_name, actual_col_name) {
+  
+  conf = table(data[ , predicted_col_name], data[ , actual_col_name])
+  TP = conf[2,2]
+  TN = conf[1,1]
+  FP = conf[2,1]
+  FN = conf[1,2]
+  
+  #Precision = TP / (TP + FP)
+  return(round((TP)/(TP + FP), 4))
+}
+print(paste0("Precision: ", precision(data, 'scored.class', 'class')))
+```
+
+
+## 6. Write a function that takes the data set as a dataframe, with actual and predicted classifications identified, and returns the sensitivity of the predictions. Sensitivity is also known as recall.
+
+Sensitivity = TP / (TP + FN)
+
+
+
+
+```{r sensitivity}
+sensitivity = function(data, predicted_col_name, actual_col_name) {
+  
+  conf = table(data[ , predicted_col_name], data[ , actual_col_name])
+  TP = conf[2,2]
+  TN = conf[1,1]
+  FP = conf[2,1]
+  FN = conf[1,2]
+  
+  #Sensitivity = TP / (TP + FN)
+  return(round((TP)/(TP + FN), 4))
+}
+print(paste0("Sensitivity: ", sensitivity(data, 'scored.class', 'class')))
+```
+
+
+## 7. Write a function that takes the data set as a dataframe, with actual and predicted classifications identified, and returns the specificity of the predictions.
+
+Specificity = TN / (TN+FP)
+
+
+```{r specificity}
+specificity = function(data, predicted_col_name, actual_col_name) {
+  
+  conf = table(data[ , predicted_col_name], data[ , actual_col_name])
+  TP = conf[2,2]
+  TN = conf[1,1]
+  FP = conf[2,1]
+  FN = conf[1,2]
+  
+  #Specificity = TN / (TN+FP)
+  return(round((TN)/(TN + FP), 4))
+}
+print(paste0("Specificity: ", specificity(data, 'scored.class', 'class')))
+```
+
+
+
+
+```{r}
+#install.packages('tinytex')
+#library(tinytex)
+
+```
+
+
+
+
+
+
+
+
